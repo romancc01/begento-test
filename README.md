@@ -1,66 +1,120 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# README — API de Productos Begento
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Resumen / Propósito
+Se realizó una **API RESTful** utilizando **Laravel** version 10+ cuya finalidad es la gestión de productos con las características que se detallan a continuación. La API devuelve datos en **formato JSON** y utiliza **Eloquent** para interactuar con la base de datos, está documentada con Swagger y con Postman
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requisitos funcionales (tal como los diste)
+- La API permite **crear, leer, actualizar y eliminar** productos.
+- Cada producto tiene : **nombre**, **descripción**, **precio**, **costo de impuestos** y **costo de fabricación**.
+- La API permite **registrar precios** de los productos en **diferentes divisas**.
+- La API regresa datos en  **formato JSON**.
+- La API utiliza **Eloquent** para interactuar con la base de datos.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Modelo de datos 
 
-## Learning Laravel
+### Productos
+| Campo              | Tipo     | Descripción                         |
+|-------------------:|---------:|-------------------------------------|
+| id                 | integer  | Identificador único del producto    |
+| name               | string   | Nombre del producto                 |
+| description        | string   | Descripción del producto            |
+| price              | decimal  | Precio del producto en la divisa base |
+| currency_id        | integer  | Identificador de la divisa base     |
+| tax_cost           | decimal  | Costo de impuestos del producto     |
+| manufacturing_cost | decimal  | Costo de fabricación del producto   |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Divisas
+| Campo        | Tipo    | Descripción                 |
+|-------------:|--------:|-----------------------------|
+| id           | integer | Identificador único de la divisa |
+| name         | string  | Nombre de la divisa         |
+| symbol       | string  | Símbolo de la divisa        |
+| exchange_rate| decimal | Tasa de cambio de la divisa |
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Precios de productos
+| Campo       | Tipo    | Descripción                                |
+|------------:|--------:|--------------------------------------------|
+| id          | integer | Identificador único del precio del producto|
+| product_id  | integer | Identificador del producto                 |
+| currency_id | integer | Identificador de la divisa                 |
+| price       | decimal | Precio del producto en la divisa especificada |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Endpoints
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Lista original requerida:
+- `GET /products` — Obtener lista de productos
+- `POST /products` — Crear un nuevo producto
+- `GET /products/{id}` — Obtener un producto por ID
+- `PUT /products/{id}` — Actualizar un producto
+- `DELETE /products/{id}` — Eliminar un producto
+- `GET /products/{id}/prices` — Obtener lista de precios de un producto
+- `POST /products/{id}/prices` — Crear un nuevo precio para un producto
 
-### Premium Partners
+Rutas implementadas en `api.php` con un autorización con un middleware 
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-## Contributing
+Route::middleware(['auth:sanctum', 'apiroutes:manage-products'])->group(function () {
+    Route::get("/products", [ProductsController::class, 'getProducts'])->name('getProducts');
+    Route::get("/products/{id}", [ProductsController::class, 'getProduct'])->name('getProduct');
+    Route::get("/products/{id}/prices", [ProductsController::class, 'getProductPrices'])->name('getProductPrices');
+    Route::post('/products', [ProductsController::class, 'newProduct'])->name('newProduct');
+    Route::post('/products/{id}/prices', [ProductsController::class, 'newPriceProduct'])->name('newPriceProduct');
+    Route::put('/products/{id}', [ProductsController::class, 'updateProduct'])->name('updateProduct');
+    Route::delete('/products/{id}', [ProductsController::class, 'deleteProduct'])->name('deleteProduct');
+});
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Autenticación
+- Existe un `AuthController` cuyo endpoint expuesto es `POST/login`.
+- Las credenciales **que mencionaste** para pruebas son:
+  - **Email:** `test@example.com`
+  - **Password:** `:password`
+- Comentario: **el seeder** genera varios usuarios pero **todos tienen la misma contraseña**.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Middleware de autorización
+Proporcionaste el middleware que valida si el usuario tiene el ability requerido. El middleware está en `App\Http\Middleware` y la clase que mostraste es `TokenApi`:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+class TokenApi
+{
+    public function handle(Request $request, Closure $next, $ability)
+    {
+        $user = $request->user();
+        if (!$user || ! $user->tokenCan($ability)){
+            return response()->json(['mensage' => 'Petición sin autorización '.$ability], Response::HTTP_FORBIDDEN);
+        }
+        return $next($request);
+    }
+}
+```
+## Arquitectura
+- Implementé una **arquitectura DDD** con capas/áreas para `product`, `currency`, `prices`.
+- Los endpoints apuntan a un **ProductsController** que usa un **Service** 
+- El **Service** consume una **interfaz**.
+- El **repositorio** con la clase `DBProduct` que **implementa** `InterfaceProduct` se encarga de utilizar los datos de los modelos para realizar las acciones definidas en la interfaz.
+---
 
-## License
+## Migraciones / Datos iniciales
+-  **Agregué migraciones** para `product`, `currency`, `prices` para comenzar a poblar datos.
+- **Dejé** por defecto dejaste la base de datos Laravel y utilicé **Laragon** con la configuración de `app_url` como `http://begento-test.test`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Tecnologías / Versiones / Paquetes mencionados
+- **PHP:** `8.5.2` 
+- **Laravel:** `10.5` 
+- **Swagger:** instalaste `darkaonline/l5-swagger:^8.6` y `swagger-api/swagger-ui` 
+
+
