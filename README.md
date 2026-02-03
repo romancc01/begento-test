@@ -56,7 +56,7 @@ Lista original requerida:
 - `GET /products/{id}/prices` — Obtener lista de precios de un producto
 - `POST /products/{id}/prices` — Crear un nuevo precio para un producto
 
-Rutas implementadas en `api.php` con un autorización con un middleware 
+Rutas implementadas en `api.php` con un autorización con un middleware, y como está por defecto la configuración el acceso a los endpoints es con le prefijo /api/.....
 
 ```
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -76,7 +76,7 @@ Route::middleware(['auth:sanctum', 'apiroutes:manage-products'])->group(function
 
 ## Autenticación
 - Existe un `AuthController` cuyo endpoint expuesto es `POST/login`.
-- Las credenciales **que mencionaste** para pruebas son:
+- Las credenciales  para pruebas son:
   - **Email:** `test@example.com`
   - **Password:** `:password`
 - Comentario: **el seeder** genera varios usuarios pero **todos tienen la misma contraseña**.
@@ -84,7 +84,7 @@ Route::middleware(['auth:sanctum', 'apiroutes:manage-products'])->group(function
 ---
 
 ## Middleware de autorización
-Proporcionaste el middleware que valida si el usuario tiene el ability requerido. El middleware está en `App\Http\Middleware` y la clase que mostraste es `TokenApi`:
+El middleware  valida si el usuario tiene el permiso requerido. El middleware está en `App\Http\Middleware` y la clase que mostraste es `TokenApi`:
 
 ```
 class TokenApi
@@ -115,6 +115,6 @@ class TokenApi
 ## Tecnologías / Versiones / Paquetes mencionados
 - **PHP:** `8.5.2` 
 - **Laravel:** `10.5` 
-- **Swagger:** instalaste `darkaonline/l5-swagger:^8.6` y `swagger-api/swagger-ui` 
+- **Swagger:** instalaste `darkaonline/l5-swagger:^8.6` y `swagger-api/swagger-ui`  (Para el acceso a Swagger es a través de la ruta /api/documentation).
 
 
