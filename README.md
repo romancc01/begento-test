@@ -1,4 +1,4 @@
-# README — API de Productos Begento
+#API de Productos Begento
 
 ## Resumen / Propósito
 Se realizó una **API RESTful** utilizando **Laravel** version 10+ cuya finalidad es la gestión de productos con las características que se detallan a continuación. La API devuelve datos en **formato JSON** y utiliza **Eloquent** para interactuar con la base de datos, está documentada con Swagger y con Postman
